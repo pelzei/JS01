@@ -1,0 +1,55 @@
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen,
+    Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
+  background: darkgrey;
+  background-size: cover;
+  color: #fff;
+}
+
+h1 {
+  font-family: UnifrakturMaguntia;
+  font-size: 3rem;
+  text-shadow: 5px 5px 10px #000;
+}
+
+p {
+  color: #41014e;
+  font-family: "Gochi Hand", cursive;
+  font-size: 1.5rem;
+}
+
+.undone {
+  background-color: rgb(247, 165, 165);
+}
+
+.undone .btn-danger,
+.undone .btn-dark {
+  display: none;
+}
+
+.done {
+  background-color: rgb(167, 240, 167);
+}
+
+.done .btn-success {
+  display: none;
+}
+
+.undone .card-header {
+  font-weight: 700;
+  font-variant-caps: titling-caps;
+  background: rgb(202, 68, 68);
+}
+
+.done .card-header {
+  font-weight: 700;
+  font-variant-caps: titling-caps;
+  color: darkgreen;
+  background: rgb(93, 187, 93);
+}
