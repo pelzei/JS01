@@ -1,84 +1,104 @@
-"use strict";
-
-const form = document.querySelector("#form");
-const task = document.querySelector("#task");
-const btn = document.querySelector("#btn");
-const jsonOutput = document.querySelector("#json-output");
+const form = document.querySelector("#todoForm");
+const input = document.querySelector("#todoInput");
+const output = document.querySelector("#output");
 
 let todos = [];
 
-const getJsonAsync = async () => {
-  const res = await fetch(
-    "https://jsonplaceholder.typicode.com/todos?_limit=10"
-  );
-  if (res.status !== 200) {
-    throw new Error("error");
-  }
-
-  const data = await res.json();
-
-  return data;
+const fetchTodos = () => {
+  fetch("https://jsonplaceholder.typicode.com/todos?_limit=10")
+    .then((res) => res.json())
+    .then((data) => {
+      todos = data;
+      console.log(todos);
+      listTodos();
+    });
 };
 
-window.addEventListener("load", () => {
-  getJsonAsync().then((data) => {
-    todos = data;
-    jsonOutput.innerHTML = "";
+fetchTodos();
 
-    todos.forEach((todo) => {
-      if (!todo.completed) {
-        jsonOutput.innerHTML += `
-        <div class="card mb-3 undone">
-        <div class="card-header">
-        Oavklarad uppgift</div>
-      <div class="card-body">
-        <p class="card-text">${todo.title}</p>
-        <button class="btn btn-dark">Radera</button> <button class="btn btn-success">Klar</button> <button class="btn btn-danger">Oklar</button>
-      </div>
-    </div>`;
-      } else {
-        jsonOutput.innerHTML += `
-        <div class="card mb-3 done">
-        <div class="card-header">
-        Avklarad uppgift</div>
-      <div class="card-body">
-        <p class="card-text">${todo.title}</p>
-        <button class="btn btn-dark">Radera</button> <button class="btn btn-success">Klar</button> <button class="btn btn-danger">Oklar</button>
-      </div>
-    </div>`;
-      }
-    });
+const listTodos = () => {
+  output.innerHTML = "";
+  todos.forEach((todo) => {
+    newTodo(todo);
   });
-});
+};
 
-/*const todos = fetch("https://jsonplaceholder.typicode.com/todos")
-  .then((response) => {
-    //console.log("resolved ", response);
-    //const data = response.json();
-    //console.log(data);
-    return response.json();
-  })
-  .then((data) => console.log(data))
-  .catch((err) => {
-    console.log(err); //ger oss nästan bara network error
-  });*/
+const newTodo = (todo) => {
+  let card = document.createElement("div");
+  card.classList.add("card", "p-3", "my-2");
 
-const validateText = (id) => {
-  const error = task.nextElementSibling;
-
-  if (task.value === "") {
-    error.innerText = "Du kan inte lämna fältet tomt";
-    task.classList.add("is-unvalid");
-    return false;
+  if (!todo.completed) {
+    card.classList.add("undone");
   } else {
-    task.classList.add("is-valid");
-    task.classList.remove("is-unvalid");
-    return true;
+    card.classList.add("done");
   }
+
+  let innerCard = document.createElement("div");
+  innerCard.classList.add(
+    "d-flex",
+    "justify-content-between",
+    "align-items-center"
+  );
+
+  let title = document.createElement("p");
+  title.innerText = todo.title;
+
+  let buttonOklar = document.createElement("button");
+  buttonOklar.classList.add("btn", "btn-danger");
+  buttonOklar.innerText = "Oklar";
+  buttonOklar.addEventListener("click", () => {
+    card.classList.remove("done");
+    card.classList.add("undone");
+  });
+
+  let buttonKlar = document.createElement("button");
+  buttonKlar.classList.add("btn", "btn-success");
+  buttonKlar.innerText = "Klar";
+  buttonKlar.addEventListener("click", () => {
+    card.classList.remove("undone");
+    card.classList.add("done");
+  });
+
+  let buttonRadera = document.createElement("button");
+  buttonRadera.classList.add("btn", "btn-dark");
+  buttonRadera.innerText = "Radera";
+  buttonRadera.addEventListener("click", () => {
+    card.classList.add("deleted");
+  });
+
+  innerCard.appendChild(title);
+  innerCard.appendChild(buttonKlar);
+  innerCard.appendChild(buttonOklar);
+  innerCard.appendChild(buttonRadera);
+  card.appendChild(innerCard);
+  output.appendChild(card);
+};
+
+const createTodo = (title) => {
+  fetch("https://jsonplaceholder.typicode.com/todos", {
+    method: "POST",
+    headers: { "Content-type": "application/json; charset=UTF-8" },
+    body: JSON.stringify({
+      title,
+      completed: false,
+    }),
+  })
+    .then((res) => res.json())
+    .then((data) => {
+      console.log(data);
+      let newTodo = {
+        ...data,
+        id: Date.now().toString(),
+      };
+      console.log(newTodo);
+      todos.unshift(newTodo);
+      listTodos();
+    });
 };
 
 form.addEventListener("submit", (e) => {
   e.preventDefault();
 
-  validateText();
+  createTodo(input.value);
+  form.reset();
 });
