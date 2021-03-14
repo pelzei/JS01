@@ -29,15 +29,24 @@ const validateText = (id) => {
 const validateEmail = (id) => {
   const input = document.querySelector("#" + id);
   const error = input.nextElementSibling;
+  //------------------ RegExp for e-mail format
   let regEx = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/;
-  let regExSwedish = /^((?![åäöÅÄÖ]).)*$/;
 
-  if (input.value === "") {
+  //----------------- Specific RegExp for å, ä, ö after automatic conversion in form
+  let regExSwedishAA = /xn--4ca/;
+  let regExSwedishAE = /xn--5ca/;
+  let regExSwedishOE = /xn--nda/;
+
+  if (input.value.trim() === "") {
     error.innerText = "Du måste ange en e-postadress";
   } else if (!regEx.test(input.value)) {
     error.innerText("Ange en korrekt e-postadress");
     return false;
-  } else if (!regExSwedish.test(input.value)) {
+  } else if (
+    regExSwedishAA.test(input.value) ||
+    regExSwedishAE.test(input.value) ||
+    regExSwedishOE.test(input.value)
+  ) {
     error.innerText = "E-postadressen får inte innehålla åäö";
     input.classList.add("is-invalid");
     return false;
@@ -87,20 +96,50 @@ function createUser(firstName, lastName, email) {
 const renderUsers = () => {
   output.innerHTML = "";
   users.forEach((user) => {
-    let template = `
-      <div class="user d-flex justify-content-between align-items-center mb-3">
-        <div class="text mb-1">
-          <h3>${user.firstName} ${user.lastName}</h3>
-          <small>${user.email}</small>
-        </div>
-        <div class="button">
-          <button class="btn btn-primary">Ändra</button>
-          <button class="btn btn-danger">Radera</button>
-        </div>
-      </div>
-      `;
+    let card = document.createElement("div");
+    card.setAttribute("id", user.id);
+    card.classList.add("card", "p-3", "m-2");
 
-    output.innerHTML += template;
+    let innerCard = document.createElement("div");
+    innerCard.classList.add("d-flex", "justify-content-between");
+
+    let userInfo = document.createElement("div");
+    userInfo.classList.add("d-flex", "flex-column");
+
+    let buttons = document.createElement("div");
+    buttons.classList.add("d-flex", "justify-content-between");
+
+    let userName = document.createElement("h3");
+    userName.innerText = `${user.firstName} ${user.lastName}`;
+
+    let userEmail = document.createElement("small");
+    userEmail.innerText = user.email;
+
+    let buttonChange = document.createElement("button");
+    buttonChange.classList.add("btn", "btn-primary", "my-3");
+    buttonChange.innerText = "Ändra";
+    buttonChange.addEventListener("click", (e) => {
+      card.classList.remove("unchanged");
+      card.classList.add("changed");
+    });
+
+    let buttonDelete = document.createElement("button");
+    buttonDelete.classList.add("btn", "btn-danger", "my-3");
+    buttonDelete.innerText = "Radera";
+    buttonDelete.addEventListener("click", (e) => {
+      let thisCard = users.findIndex((user) => user.id == card.id);
+      users.splice(thisCard, 1);
+      renderUsers();
+    });
+
+    userInfo.appendChild(userName);
+    userInfo.appendChild(userEmail);
+    buttons.appendChild(buttonChange);
+    buttons.appendChild(buttonDelete);
+    innerCard.appendChild(userInfo);
+    innerCard.appendChild(buttons);
+    card.appendChild(innerCard);
+    output.appendChild(card);
   });
 };
 

@@ -2,14 +2,9 @@ body {
   background: #a79a9a;
 }
 
-.user {
-  background-image: linear-gradient(
-    90deg,
-    #ff1e1e 0%,
-    #f39367 35%,
-    #ffd900 100%
+.card {
+  background-color: white
   );
-  box-shadow: 5px 5px 10px 0 #4d0909;
   padding: 1.5rem;
   border-radius: 0.5rem;
 }
