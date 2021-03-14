@@ -39,6 +39,7 @@ const validateEmail = (id) => {
 
   if (input.value.trim() === "") {
     error.innerText = "Du måste ange en e-postadress";
+    input.classList.add("is-invalid");
   } else if (!regEx.test(input.value)) {
     error.innerText("Ange en korrekt e-postadress");
     return false;
@@ -149,9 +150,6 @@ formA.addEventListener("submit", (e) => {
   e.preventDefault();
 
   validate();
-  //validateText("firstName");
-  //validateText("lastName");
-  //validateEmail("email");
 
   if (
     validateText("firstName") &&
