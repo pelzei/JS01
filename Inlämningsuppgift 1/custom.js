@@ -30,8 +30,7 @@ const validateEmail = (id) => {
   const input = document.querySelector("#" + id);
   const error = input.nextElementSibling;
   //------------------ RegExp for e-mail format
-  let regEx = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/;
-
+  let regEx = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(\.[-a-z0-9~!$%^&*_=+}{\'?]+)/;
   //----------------- Specific RegExp for å, ä, ö after automatic conversion in form
   let regExSwedish = /xn--/;
 
@@ -39,7 +38,8 @@ const validateEmail = (id) => {
     error.innerText = "Du måste ange en e-postadress";
     input.classList.add("is-invalid");
   } else if (!regEx.test(input.value)) {
-    error.innerText("Ange en korrekt e-postadress");
+    error.innerText = "Ange en korrekt e-postadress";
+    input.classList.add("is-invalid");
     return false;
   } else if (regExSwedish.test(input.value)) {
     error.innerText = "E-postadressen får inte innehålla åäö";
