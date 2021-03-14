@@ -30,15 +30,21 @@ const validateEmail = (id) => {
   const input = document.querySelector("#" + id);
   const error = input.nextElementSibling;
   let regEx = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/;
+  let regExSwedish = /[åäöÅÄÖ]/;
 
-  if (regEx.test(input.value)) {
+  if (input.value === "") {
+    error.innerText = "Du måste ange en e-postadress";
+  } else if (!regEx.test(input.value)) {
+    error.innerText("Ange en korrekt e-postadress");
+    return false;
+  } else if (!regExSwedish.test(input.value)) {
+    error.innerText = "E-postadressen får inte innehålla åäö";
+    input.classList.add("is-invalid");
+    return false;
+  } else if (regEx.test(input.value)) {
     input.classList.add("is-valid");
     input.classList.remove("is-invalid");
     return true;
-  } else {
-    error.innerText = "Ange en giltig e-postadress";
-    input.classList.add("is-invalid");
-    return false;
   }
 };
 
