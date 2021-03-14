@@ -1,6 +1,7 @@
 const form = document.querySelector("#todoForm");
 const input = document.querySelector("#todoInput");
 const output = document.querySelector("#output");
+const output2 = document.querySelector("#invalid-feedback");
 
 let todos = [];
 
@@ -25,6 +26,7 @@ const listTodos = () => {
 
 const newTodo = (todo) => {
   let card = document.createElement("div");
+  card.setAttribute("id", todo.id);
   card.classList.add("card", "p-3", "my-2");
 
   if (!todo.completed) {
@@ -57,15 +59,20 @@ const newTodo = (todo) => {
   buttonKlar.addEventListener("click", () => {
     card.classList.remove("undone");
     card.classList.add("done");
+    todo.completed = !todo.completed;
   });
 
   let buttonRadera = document.createElement("button");
   buttonRadera.classList.add("btn", "btn-dark");
   buttonRadera.innerText = "Radera";
-  buttonRadera.addEventListener("click", () => {
-    card.classList.add("deleted");
+  buttonRadera.addEventListener("click", (e) => {
+    //console.log(card.id);
+    let thisCard = todos.findIndex((todo) => todo.id == card.id);
+    //console.log(thisCard);
+    todos.splice(thisCard, 1);
+    //console.log(todos);
+    listTodos();
   });
-
   innerCard.appendChild(title);
   innerCard.appendChild(buttonKlar);
   innerCard.appendChild(buttonOklar);
@@ -73,6 +80,8 @@ const newTodo = (todo) => {
   card.appendChild(innerCard);
   output.appendChild(card);
 };
+
+console.log(todos);
 
 const createTodo = (title) => {
   fetch("https://jsonplaceholder.typicode.com/todos", {
@@ -96,9 +105,24 @@ const createTodo = (title) => {
     });
 };
 
+const validateText = (id) => {
+  const input = document.querySelector("#todoInput");
+  const error = document.querySelector("#error");
+
+  if (input.value == "") {
+    error.innerText = "Du kan inte lägga till en tom uppgift";
+    input.classList.add("is-invalid");
+    return false;
+  } else {
+    input.classList.add("is-valid");
+    input.classList.remove("is-invalid");
+    createTodo(input.value);
+    form.reset();
+  }
+};
+
 form.addEventListener("submit", (e) => {
   e.preventDefault();
 
-  createTodo(input.value);
-  form.reset();
+  validateText(input.value);
 });
